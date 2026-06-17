@@ -1,177 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Happy Birthday Sabhya</title>
-    <style>
-      body {
-        margin: 0;
-        min-height: 100vh;
-        display: grid;
-        place-items: center;
-        font-family: Arial, sans-serif;
-        background: linear-gradient(180deg, #fff0f6, #f3f8ff);
-        color: #111;
-        overflow: hidden;
-      }
-      .card {
-        text-align: center;
-        background: rgba(255, 255, 255, 0.9);
-        padding: 2rem;
-        border-radius: 1rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-        max-width: 30rem;
-        width: min(90vw, 30rem);
-        z-index: 2;
-      }
-      h1 {
-        margin-top: 0;
-      }
-      #countdown {
-        font-size: 2.2rem;
-        font-weight: 700;
-        margin: 1rem 0;
-      }
-      #message {
-        font-size: 2rem;
-        font-weight: 800;
-        color: #c20065;
-        display: none;
-      }
-      .hidden {
-        display: none;
-      }
-      #balloons {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 1;
-      }
-      .balloon {
-        position: absolute;
-        bottom: -5rem;
-        font-size: 2rem;
-        animation: floatUp linear infinite;
-      }
-      @keyframes floatUp {
-        to {
-          transform: translateY(-120vh);
-        }
-      }
-      #confetti {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 3;
-      }
-    </style>
-  </head>
-  <body>
-    <main class="card">
-      <h1>Countdown to Sabhya's Birthday</h1>
-      <p>Target: 18 June 12:00 AM IST</p>
-      <div id="countdown" aria-live="polite">Loading...</div>
-      <div id="message" aria-live="assertive">Happy Birthday Sabhya!!</div>
-    </main>
-    <div id="balloons" class="hidden" aria-hidden="true"></div>
-    <canvas id="confetti" class="hidden" aria-hidden="true"></canvas>
-    <script>
-      function getNextBirthdayMs(nowMs = Date.now()) {
-        const now = new Date(nowMs);
-        const nowInIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-        let year = nowInIST.getFullYear();
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Birthday Countdown</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #fff0f6, #f3f8ff);
+      color: #111;
+      overflow: hidden;
+    }
 
-        const thisYearBirthdayIST = new Date(year, 5, 18, 0, 0, 0, 0).getTime();
-        if (nowInIST.getTime() >= thisYearBirthdayIST) {
-          year += 1;
-        }
+    .card {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+      max-width: 30rem;
+      width: min(90vw, 30rem);
+      z-index: 2;
+    }
 
-        const istOffsetMs = 5.5 * 60 * 60 * 1000;
-        const utcBirthdayMs = Date.UTC(year, 5, 18, 0, 0, 0, 0) - istOffsetMs;
-        return utcBirthdayMs;
+    #countdown {
+      font-size: 2.2rem;
+      font-weight: 700;
+    }
+
+    #message {
+      display: none;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #c20065;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #balloons {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .balloon {
+      position: absolute;
+      bottom: -5rem;
+      font-size: 2rem;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      to {
+        transform: translateY(-120vh);
       }
+    }
 
-      function createBalloons() {
-        const layer = document.getElementById('balloons');
-        layer.classList.remove('hidden');
-        layer.innerHTML = '';
+    #confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Birthday Countdown</h1>
+    <div id="countdown" aria-live="polite">5 seconds left</div>
+    <div id="message" aria-live="assertive">Happy Birthday Sabhya!!</div>
+  </main>
 
-        for (let i = 0; i < 25; i += 1) {
-          const b = document.createElement('span');
-          b.className = 'balloon';
-          b.textContent = '🎈';
-          b.style.left = `${Math.random() * 100}%`;
-          b.style.animationDuration = `${6 + Math.random() * 6}s`;
-          b.style.animationDelay = `${Math.random() * 4}s`;
-          layer.appendChild(b);
-        }
+  <div id="balloons" class="hidden" aria-hidden="true"></div>
+  <canvas id="confetti" class="hidden" aria-hidden="true"></canvas>
+  <audio id="birthdaySong" src="sabhya.mp3" preload="auto"></audio>
+
+  <script>
+    function createBalloons() {
+      const layer = document.getElementById('balloons');
+      layer.classList.remove('hidden');
+      layer.innerHTML = '';
+
+      for (let i = 0; i < 25; i += 1) {
+        const b = document.createElement('span');
+        b.className = 'balloon';
+        b.textContent = '🎈';
+        b.style.left = `${Math.random() * 100}%`;
+        b.style.animationDuration = `${6 + Math.random() * 6}s`;
+        b.style.animationDelay = `${Math.random() * 4}s`;
+        layer.appendChild(b);
       }
+    }
 
-      function startConfetti() {
-        const canvas = document.getElementById('confetti');
-        canvas.classList.remove('hidden');
-        const ctx = canvas.getContext('2d');
-        const colors = ['#ff4d6d', '#ffd166', '#06d6a0', '#118ab2', '#8338ec'];
+    function startConfetti() {
+      const canvas = document.getElementById('confetti');
+      canvas.classList.remove('hidden');
+      const ctx = canvas.getContext('2d');
+      const colors = ['#ff4d6d', '#ffd166', '#06d6a0', '#118ab2', '#8338ec'];
 
-        function resize() {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-        }
-        resize();
-        window.addEventListener('resize', resize);
-
-        const pieces = Array.from({ length: 150 }, () => ({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height - canvas.height,
-          size: 4 + Math.random() * 6,
-          speed: 2 + Math.random() * 3,
-          drift: Math.random() * 2 - 1,
-          color: colors[Math.floor(Math.random() * colors.length)]
-        }));
-
-        function draw() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          pieces.forEach((p) => {
-            p.y += p.speed;
-            p.x += p.drift;
-            if (p.y > canvas.height) {
-              p.y = -10;
-              p.x = Math.random() * canvas.width;
-            }
-            ctx.fillStyle = p.color;
-            ctx.fillRect(p.x, p.y, p.size, p.size);
-          });
-          requestAnimationFrame(draw);
-        }
-
-        draw();
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
       }
 
-      function celebrate() {
-        document.getElementById('countdown').classList.add('hidden');
-        document.getElementById('message').style.display = 'block';
-        createBalloons();
-        startConfetti();
+      resize();
+      window.addEventListener('resize', resize);
+
+      const pieces = Array.from({ length: 150 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        size: 4 + Math.random() * 6,
+        speed: 2 + Math.random() * 3,
+        drift: Math.random() * 2 - 1,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      }));
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach((p) => {
+          p.y += p.speed;
+          p.x += p.drift;
+
+          if (p.y > canvas.height) {
+            p.y = -10;
+            p.x = Math.random() * canvas.width;
+          }
+
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+
+        requestAnimationFrame(draw);
       }
 
-      const targetMs = getNextBirthdayMs();
-      const countdownEl = document.getElementById('countdown');
-      let timer = null;
+      draw();
+    }
 
-      function tick() {
-        const now = Date.now();
-        const secondsLeft = Math.max(0, Math.ceil((targetMs - now) / 1000));
-        countdownEl.textContent = `${secondsLeft} second${secondsLeft === 1 ? '' : 's'} left`;
+    async function celebrate() {
+      document.getElementById('countdown').classList.add('hidden');
+      document.getElementById('message').style.display = 'block';
+      createBalloons();
+      startConfetti();
 
-        if (secondsLeft <= 0) {
-          clearInterval(timer);
-          celebrate();
-        }
+      const song = document.getElementById('birthdaySong');
+      try {
+        await song.play();
+      } catch (error) {
+        console.warn('Autoplay blocked. Click anywhere to play sabhya.mp3.');
+        const tryPlay = async () => {
+          try {
+            await song.play();
+            document.removeEventListener('click', tryPlay);
+          } catch (_ignored) {}
+        };
+        document.addEventListener('click', tryPlay);
       }
+    }
 
-      tick();
-      timer = setInterval(tick, 1000);
-    </script>
-  </body>
+    let secondsLeft = 5;
+    const countdownEl = document.getElementById('countdown');
+
+    const timer = setInterval(() => {
+      secondsLeft -= 1;
+      countdownEl.textContent = `${Math.max(secondsLeft, 0)} second${secondsLeft === 1 ? '' : 's'} left`;
+
+      if (secondsLeft <= 0) {
+        clearInterval(timer);
+        celebrate();
+      }
+    }, 1000);
+  </script>
+</body>
 </html>

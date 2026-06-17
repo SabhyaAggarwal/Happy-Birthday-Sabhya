@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Birthday Countdown Test</title>
+    <title>Happy Birthday Sabhya</title>
     <style>
       body {
         margin: 0;
@@ -25,15 +25,19 @@
         width: min(90vw, 30rem);
         z-index: 2;
       }
+      h1 {
+        margin-top: 0;
+      }
       #countdown {
         font-size: 2.2rem;
         font-weight: 700;
+        margin: 1rem 0;
       }
       #message {
-        display: none;
         font-size: 2rem;
         font-weight: 800;
         color: #c20065;
+        display: none;
       }
       .hidden {
         display: none;
@@ -65,15 +69,29 @@
   </head>
   <body>
     <main class="card">
-      <h1>Birthday Countdown Test (5s)</h1>
-      <div id="countdown" aria-live="polite">5 seconds left</div>
+      <h1>Countdown to Sabhya's Birthday</h1>
+      <p>Target: 18 June 12:00 AM IST</p>
+      <div id="countdown" aria-live="polite">Loading...</div>
       <div id="message" aria-live="assertive">Happy Birthday Sabhya!!</div>
     </main>
     <div id="balloons" class="hidden" aria-hidden="true"></div>
     <canvas id="confetti" class="hidden" aria-hidden="true"></canvas>
-    <audio id="birthdaySong" src="sabhya.mp3" preload="auto"></audio>
-
     <script>
+      function getNextBirthdayMs(nowMs = Date.now()) {
+        const now = new Date(nowMs);
+        const nowInIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+        let year = nowInIST.getFullYear();
+
+        const thisYearBirthdayIST = new Date(year, 5, 18, 0, 0, 0, 0).getTime();
+        if (nowInIST.getTime() >= thisYearBirthdayIST) {
+          year += 1;
+        }
+
+        const istOffsetMs = 5.5 * 60 * 60 * 1000;
+        const utcBirthdayMs = Date.UTC(year, 5, 18, 0, 0, 0, 0) - istOffsetMs;
+        return utcBirthdayMs;
+      }
+
       function createBalloons() {
         const layer = document.getElementById('balloons');
         layer.classList.remove('hidden');
@@ -130,38 +148,30 @@
         draw();
       }
 
-      async function celebrate() {
+      function celebrate() {
         document.getElementById('countdown').classList.add('hidden');
         document.getElementById('message').style.display = 'block';
         createBalloons();
         startConfetti();
-
-        const song = document.getElementById('birthdaySong');
-        try {
-          await song.play();
-        } catch (error) {
-          console.warn('Autoplay blocked. Click anywhere to play sabhya.mp3.');
-          const tryPlay = async () => {
-            try {
-              await song.play();
-              document.removeEventListener('click', tryPlay);
-            } catch (_ignored) {}
-          };
-          document.addEventListener('click', tryPlay);
-        }
       }
 
-      let secondsLeft = 5;
+      const targetMs = getNextBirthdayMs();
       const countdownEl = document.getElementById('countdown');
-      const timer = setInterval(() => {
-        secondsLeft -= 1;
-        countdownEl.textContent = `${Math.max(secondsLeft, 0)} second${secondsLeft === 1 ? '' : 's'} left`;
+      let timer = null;
+
+      function tick() {
+        const now = Date.now();
+        const secondsLeft = Math.max(0, Math.ceil((targetMs - now) / 1000));
+        countdownEl.textContent = `${secondsLeft} second${secondsLeft === 1 ? '' : 's'} left`;
 
         if (secondsLeft <= 0) {
           clearInterval(timer);
           celebrate();
         }
-      }, 1000);
+      }
+
+      tick();
+      timer = setInterval(tick, 1000);
     </script>
   </body>
 </html>
